@@ -1285,7 +1285,7 @@ var UPDATES = NEWEST.map(function (n) {
   var L = LESSONS.find(function (x) { return x.id === n[0]; });
   return L ? { d: n[1], t: L.vi, id: n[0] } : null;
 }).filter(Boolean);
-var TKVER = NEWEST.map(function (n) { return n.join("@"); }).join("|");
+var TKVER = NEWEST.map(function (n) { return n.join("@"); }).join("|") + "#" + LESSONS.length;
 function paintTicker() {
   var box = document.getElementById("ticker"), track = document.getElementById("tktrack"); if (!box || !track) return;
   var hidden = false;
@@ -1294,6 +1294,7 @@ function paintTicker() {
   track.textContent = "";
   function group(dup) {
     var g = el("span", "tkgrp"); if (dup) g.setAttribute("aria-hidden", "true");
+    var ci = el("span", "tkitem"); ci.appendChild(el("b", "", "Hiện có")); ci.appendChild(document.createTextNode(LESSONS.length + " bài luyện")); g.appendChild(ci);
     UPDATES.forEach(function (u) {
       var idx = u.id ? LESSONS.findIndex(function (L) { return L.id === u.id; }) : -1;
       var it = el(idx >= 0 ? "button" : "span", "tkitem"); if (idx >= 0) { it.type = "button"; if (dup) it.tabIndex = -1; it.addEventListener("click", function () { startLesson(idx, "listen"); }); }
