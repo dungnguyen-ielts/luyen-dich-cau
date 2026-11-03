@@ -225,11 +225,15 @@ label.btn:hover { background: var(--hover); }
 .linkbtn { font: inherit; font-size: 15px; background: none; border: 0; padding: 0; color: var(--ink); text-decoration: underline; cursor: pointer; }
 #home[hidden], #practice[hidden] { display: none; }
 #home { position: relative; isolation: isolate; }
-#home::before { content: ""; position: absolute; z-index: -1; left: 50%; top: -12px; width: min(1100px, 100vw); height: 460px; transform: translateX(-50%); pointer-events: none;
-  background: url(home-bg.jpg) center top / cover no-repeat; opacity: .5; mix-blend-mode: multiply;
-  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%); mask-image: linear-gradient(to bottom, #000 45%, transparent 100%); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #home::before { filter: invert(1) hue-rotate(180deg); mix-blend-mode: screen; opacity: .1; } }
-:root[data-theme="dark"] #home::before { filter: invert(1) hue-rotate(180deg); mix-blend-mode: screen; opacity: .1; }
+.homecover { display: block; width: 100%; aspect-ratio: 1024 / 520; max-height: 340px; object-fit: cover; object-position: center top; border-radius: 16px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .homecover { filter: invert(1) hue-rotate(180deg); opacity: .35; } }
+:root[data-theme="dark"] .homecover { filter: invert(1) hue-rotate(180deg); opacity: .35; }
+#home > header { position: relative; margin-top: -44px; }
+.lbanner { display: block; width: 100%; height: auto; aspect-ratio: 1024 / 440; object-fit: cover; object-position: center; border-radius: 16px; border: 1px solid var(--line); background: var(--tile); }
+.lbanner[hidden] { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lbanner { filter: brightness(.85); } }
+:root[data-theme="dark"] .lbanner { filter: brightness(.85); }
 #home, #practice { display: flex; flex-direction: column; gap: 20px; }
 
 .app { display: block; }
@@ -294,12 +298,13 @@ button.tkitem { cursor: pointer; text-decoration: underline; text-decoration-col
 <div class="app">
   <div class="ticker" id="ticker" role="region" aria-label="Thông báo cập nhật" hidden><span class="tkbadge">Mới</span><div class="tkview"><div class="tktrack" id="tktrack"></div></div><button class="tkx" id="tkx" type="button" aria-label="Ẩn thông báo">×</button></div>
   <div class="topbar">
-    <button class="brand" id="brandbtn" type="button" aria-label="Về trang chủ"><span class="logo">汉</span><span class="bname">Luyện dịch câu</span></button>
+    <button class="brand" id="brandbtn" type="button" aria-label="Về trang chủ"><span class="logo">汉</span><span class="bname">Luyện dịch Việt-Trung</span></button>
     <button class="tab homebtn" id="tab-home" type="button" aria-selected="true" data-view="home"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Trang chủ</button>
   </div>
   <div class="content">
     <div id="home"></div>
     <div id="practice" hidden>
+    <img class="lbanner" id="lbanner" alt="" width="1024" height="440" hidden>
     <header>
       <span class="pill" id="lessonpill"></span>
       <h1>Luyện dịch Việt-Trung từ Podcast</h1>
@@ -1192,8 +1197,16 @@ function showView(v) {
   markTabs();
   window.scrollTo(0, 0);
 }
+var COVERS = ["cover1.jpg", "cover2.jpg", "cover3.jpg", "cover4.jpg", "cover5.jpg"], lastCover = -1;
+function randomCover() {
+  var im = document.getElementById("lbanner"); if (!im) return;
+  var k; do { k = Math.floor(Math.random() * COVERS.length); } while (k === lastCover && COVERS.length > 1);
+  lastCover = k; im.onload = function () { im.hidden = false; }; im.onerror = function () { im.hidden = true; };
+  im.hidden = true; im.src = COVERS[k];
+}
 function startLesson(i, mode) {
   setLesson(i); if (mode) state.mode = mode;
+  randomCover();
   paintHeader(); showView("practice"); startRound();
 }
 document.querySelectorAll(".tab[data-mode]").forEach(function (t) {
@@ -1223,6 +1236,7 @@ function srcEl(L, cls) {
 }
 function paintHome() {
   var h = document.getElementById("home"); h.textContent = "";
+  var cov = el("img", "homecover"); cov.src = "home-bg.jpg"; cov.alt = ""; cov.width = 1024; cov.height = 520; h.appendChild(cov);
   var hero = el("header");
   hero.appendChild(el("h1", "", "Luyện dịch Việt-Trung từ Podcast"));
   hero.appendChild(el("p", "lead", "Mỗi bài là một tập podcast. Nghe trước, rồi dịch lại những câu trong tập từ tiếng Việt sang tiếng Trung."));
