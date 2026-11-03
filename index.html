@@ -225,11 +225,12 @@ label.btn:hover { background: var(--hover); }
 .linkbtn { font: inherit; font-size: 15px; background: none; border: 0; padding: 0; color: var(--ink); text-decoration: underline; cursor: pointer; }
 #home[hidden], #practice[hidden] { display: none; }
 #home { position: relative; isolation: isolate; }
-.homecover { display: block; width: 100%; aspect-ratio: 1024 / 520; max-height: 340px; object-fit: cover; object-position: center top; border-radius: 16px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .homecover { filter: invert(1) hue-rotate(180deg); opacity: .35; } }
-:root[data-theme="dark"] .homecover { filter: invert(1) hue-rotate(180deg); opacity: .35; }
-#home > header { position: relative; margin-top: -44px; }
+#home { position: relative; isolation: isolate; }
+#home::before { content: ""; position: absolute; z-index: -1; left: 50%; top: -12px; width: min(1100px, 100vw); height: 520px; transform: translateX(-50%); pointer-events: none;
+  background: url(home-bg.jpg) center top / cover no-repeat; opacity: .3; mix-blend-mode: multiply;
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 100%); mask-image: linear-gradient(to bottom, #000 40%, transparent 100%); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #home::before { filter: invert(1) hue-rotate(180deg); mix-blend-mode: screen; opacity: .1; } }
+:root[data-theme="dark"] #home::before { filter: invert(1) hue-rotate(180deg); mix-blend-mode: screen; opacity: .1; }
 .lbanner { display: block; width: 100%; height: auto; aspect-ratio: 1024 / 440; object-fit: cover; object-position: center; border-radius: 16px; border: 1px solid var(--line); background: var(--tile); }
 .lbanner[hidden] { display: none; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lbanner { filter: brightness(.85); } }
@@ -1236,7 +1237,6 @@ function srcEl(L, cls) {
 }
 function paintHome() {
   var h = document.getElementById("home"); h.textContent = "";
-  var cov = el("img", "homecover"); cov.src = "home-bg.jpg"; cov.alt = ""; cov.width = 1024; cov.height = 520; h.appendChild(cov);
   var hero = el("header");
   hero.appendChild(el("h1", "", "Luyện dịch Việt-Trung từ Podcast"));
   hero.appendChild(el("p", "lead", "Mỗi bài là một tập podcast. Nghe trước, rồi dịch lại những câu trong tập từ tiếng Việt sang tiếng Trung."));
