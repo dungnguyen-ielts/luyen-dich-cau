@@ -1042,6 +1042,7 @@ function renderListen() {
   }
   function play() {
     if (audio) { audio.play().catch(function () { info.textContent = "Trình duyệt chưa cho phát âm thanh. Bấm Phát thêm một lần nữa."; playing = false; pb.textContent = "Phát"; }); }
+    else info.textContent = "Audio dài nên cần vài giây để nạp. Bài sẽ tự phát khi nạp xong.";
     vlast = performance.now(); playing = true; pb.textContent = "Tạm dừng";
     cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
   }
@@ -1079,6 +1080,12 @@ function renderListen() {
       audio.onended(function () { playing = false; pb.textContent = "Phát"; });
       fname.textContent = name;
       info.textContent = "Audio đã sẵn sàng. Bấm Phát để nghe, bấm vào một câu để nhảy tới đó.";
+      if (playing) {
+        try { audio.currentTime = vt; } catch (e0) {}
+        var pr0 = audio.play(), stuck = function () { if (!playing) return; info.textContent = "Audio đã sẵn sàng. Bấm Phát một lần nữa để nghe."; try { audio.pause(); } catch (e1) {} playing = false; pb.textContent = "Phát"; };
+        if (pr0 && pr0.then) Promise.race([pr0, new Promise(function (_, rj) { setTimeout(rj, 1500); })]).then(function () { info.textContent = "Audio đã sẵn sàng, đang phát."; }, stuck);
+        else info.textContent = "Audio đã sẵn sàng, đang phát.";
+      }
       sync(true);
     }
     info.textContent = "Đang giải mã audio, mất vài giây...";
